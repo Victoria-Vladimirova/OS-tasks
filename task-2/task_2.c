@@ -6,7 +6,7 @@
 int sparse(int fd) {
 	char byte;
 	int ret;
-	long long counter = 0;
+	long long int counter = 0;
 
 	while ((ret = read(0, &byte, 1)) > 0) {
 		if (byte == 0) {
