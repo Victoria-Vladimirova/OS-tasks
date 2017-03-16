@@ -4,8 +4,9 @@
 #include <unistd.h>
 
 int sparse(int fd) {
-	unsigned char byte;
-	int ret, counter = 0;
+	char byte;
+	int ret;
+	long long counter = 0;
 
 	while ((ret = read(0, &byte, 1)) > 0) {
 		if (byte == 0) {
