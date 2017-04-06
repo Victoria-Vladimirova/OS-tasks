@@ -14,6 +14,7 @@ int getNumbers(char * fileName) {
 		printf("Cannot open file %s\n", fileName);
 	    return -1;
     }
+	
     int result = 0;
     int count;
     while ((count = fscanf(ptrFile, "%f", &numbers[numbersLength])) != EOF) {
