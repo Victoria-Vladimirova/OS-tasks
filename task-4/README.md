@@ -7,7 +7,7 @@
 ```
 ./compile.sh (Для сборки под OS X нужно убрать опцию -lrt)
 Запуск сервера: ./lifesvr <input_file>
-Запуск клиента: ./lifecln lochalhost 8080
+Запуск клиента: ./lifecln localhost 8080
 ```
 
 CentOS 7, GNU bash version 4.2.46
