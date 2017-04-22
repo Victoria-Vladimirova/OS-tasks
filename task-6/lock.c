@@ -16,17 +16,17 @@ char * getLockName(char * fileName, char * extension) {
 }
 
 int lockLockFile(char * fileName) {
-	if (!access(fileName, 0)) {
-		return -1;
-	}
-	FILE * ptrFile = fopen(fileName, "w");
-	fprintf(ptrFile, "%d", getpid());
-	fclose(ptrFile);
-	return 0;
+    if (!access(fileName, 0)) {
+        return -1;
+    }
+    FILE * ptrFile = fopen(fileName, "w");
+    fprintf(ptrFile, "%d", getpid());
+    fclose(ptrFile);
+    return 0;
 }
 
 void clearLockLock(char * fileName) {
-	remove(fileName);
+    remove(fileName);
 }
 
 int lockFile(char * fileName, char * mode, char * user) {
@@ -34,11 +34,11 @@ int lockFile(char * fileName, char * mode, char * user) {
     char * lockLockFileName = getLockName(fileName, ".lck.lck\0");
 
     // ждем, пока не сможем заблокировать .lck файл
-	while (lockLockFile(lockLockFileName) != 0) {
-		sleep(5);
-	}
+    while (lockLockFile(lockLockFileName) != 0) {
+        sleep(5);
+    }
 
-	sleep(20);
+    sleep(20);
 
     FILE * ptrFile = fopen(lockFileName, "a+");
     // помещаем указатель в начало, чтобы посмотреть предыдущие записи
@@ -69,9 +69,9 @@ int lockFile(char * fileName, char * mode, char * user) {
     }
 
     fclose(ptrFile);
-	clearLockLock(lockLockFileName);
+    clearLockLock(lockLockFileName);
 
-	return isRecordExist;
+    return isRecordExist;
 }
 
 void clearLock(char * fileName, char * user) {
@@ -79,9 +79,9 @@ void clearLock(char * fileName, char * user) {
     char * lockLockFileName = getLockName(fileName, ".lck.lck\0");
 
     // ждем, пока не сможем заблокировать .lck файл
-	while (lockLockFile(lockLockFileName) != 0) {
-		sleep(5);
-	}
+    while (lockLockFile(lockLockFileName) != 0) {
+        sleep(5);
+    }
 
     FILE * ptrFile = fopen(lockFileName, "r");
 
@@ -93,7 +93,7 @@ void clearLock(char * fileName, char * user) {
     char records [50][100];
 
     while ((read = getline(&line, &len, ptrFile)) != -1) {
-    	char * dst = (char *) malloc(len);
+        char * dst = (char *) malloc(len);
         strcpy(dst, line);
 
         // получаем последнее слово = user
@@ -111,15 +111,15 @@ void clearLock(char * fileName, char * user) {
 
     if (i == 0) {
         // если в файле после удаления строки не останется записей, то удаляем его
-    	remove(lockFileName);
+        remove(lockFileName);
     } else {
-    	ptrFile = fopen(lockFileName, "w");
+        ptrFile = fopen(lockFileName, "w");
 
-    	int j;
-	    for (j = 0; j < i; j++) {
-	        fprintf(ptrFile, "%s", records[j]);
-	    }
-	    fclose(ptrFile);
+        int j;
+        for (j = 0; j < i; j++) {
+            fprintf(ptrFile, "%s", records[j]);
+        }
+        fclose(ptrFile);
     }
 
     clearLockLock(lockLockFileName);
@@ -128,7 +128,7 @@ void clearLock(char * fileName, char * user) {
 void changePassword(char * fileName, char * user, char * password) {
     // ждем, пока не сможем заблокировать файл
     while (lockFile(fileName, "write", user) != 0) {
-    	sleep(5);
+        sleep(5);
     }
 
     sleep(20);
