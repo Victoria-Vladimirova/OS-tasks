@@ -164,8 +164,7 @@ void read_config() {
 
 void inc_and_check_failed_runs(struct command *acommand) {
     acommand->failed_runs++;
-    // syslog(LOG_WARNING, "Command %s failed for %d time", acommand->args[0], acommand->failed_runs);
-    printf("Command %s failed for %d time\n", acommand->args[0], acommand->failed_runs);
+    syslog(LOG_WARNING, "Command %s failed for %d time", acommand->args[0], acommand->failed_runs);
     if (acommand->failed_runs > MAX_FAILED_RUNS) {
         acommand->failed_runs = 0;
         acommand->block_time = time(NULL);
@@ -230,6 +229,7 @@ void reload() {
         if (commands[i]->pid != 0) {
             syslog(LOG_INFO, "Killing child process %d", commands[i]->pid);
             kill(commands[i]->pid, SIGKILL);
+            commands[i]->pid = 0;
             run_count--;
         }
     }
@@ -275,6 +275,7 @@ void wait_for_process_termination() {
 
             syslog(LOG_INFO, "Child process %d terminated", cpid);
             run_count--;
+            commands[i]->pid = 0;
             rerun_if_needed(i);
             break;
         }
@@ -285,8 +286,6 @@ void wait_for_process_termination() {
 void timer_handler(int signum) {
     int i;
     for (i = 0; i < command_count; i++) {
-        printf("num %d, block_time %d, diff %d,	 failed runs %d\n", i, commands[i]->block_time,
-               time(NULL) - commands[i]->block_time > FAILED_BLOCK_TIME, commands[i]->failed_runs);
         if (commands[i]->block_time != 0 && time(NULL) - commands[i]->block_time > FAILED_BLOCK_TIME) {
             syslog(LOG_INFO, "Block expired for command %s, resetting", commands[i]->args[0]);
             commands[i]->block_time = 0;
@@ -306,7 +305,7 @@ int install_timer() {
     timer.it_value.tv_usec = 0;
     timer.it_interval = timer.it_value;
     if (setitimer(ITIMER_REAL, &timer, NULL) == -1) {
-        printf("Error setting timer\n");
+        perror("Error setting timer");
         return -1;
     }
     return 0;
@@ -339,7 +338,7 @@ int main(int argc, char **argv) {
         wait_for_process_termination();
 
         // если все процессы выполнены, и не требуется перечитывание конфига, то выходим
-        if (!run_count && !need_reload) {
+        if (run_count == 0 && need_reload == 0) {
             break;
         }
     }
